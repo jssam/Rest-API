@@ -5,6 +5,8 @@ from firebase_upload_download import *
 import os
 import imageio
 import matplotlib.pyplot as plt
+from ImageClub import *
+from random_no import *
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -33,6 +35,46 @@ def mem_gen():
 	converted_img = generate_meme(url,top_text,bottom_text)
 	local_path = os.path.join(dir_path,converted_img)
 	upload("/.Generated/"+name,local_path)
+	link = get_url("/.Generated/"+name)
+	return link
+
+@app.route('/hconcat',methods=['GET','POST'])
+def hconcat():
+	n = random_no()
+	format_='.jpg'
+	name = "Hconcat_"+n+format_
+	
+	urls = request.json['URL']
+	imgs = [imageio.imread(url) for url in urls]
+	
+	loc=[]
+	for idx in range(len(imgs)):
+		plt.imsave("Input_hconcat"+n+str(idx)+".jpg",imgs[idx])
+		loc.append("Input_hconcat"+n+str(idx)+".jpg")
+
+	converted_img = hconcat_resize_min(loc,name)
+	upload("/.Generated/"+name,converted_img)
+	link = get_url("/.Generated/"+name)
+	return link
+
+#completed
+@app.route('/vconcat',methods=['GET','POST'])
+def vconcat():
+	n = random_no()
+	format_='.jpg'
+	name = "Vconcat_"+n+format_
+
+
+	urls = request.json['URL']
+	imgs = [imageio.imread(url) for url in urls]
+	
+	loc=[]
+	for idx in range(len(imgs)):
+		plt.imsave("Input_vconcat"+n+str(idx)+".jpg",imgs[idx])
+		loc.append("Input_vconcat"+n+str(idx)+".jpg")
+
+	converted_img = vconcat_resize_min(loc,name)
+	upload("/.Generated/"+name,converted_img)
 	link = get_url("/.Generated/"+name)
 	return link
 
